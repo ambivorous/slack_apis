@@ -9,9 +9,10 @@
   "author": "Geoffrey Muller",
   "license": "ISC",
   "dependencies": {
-    "express": "~4.0.0",
-    "mongoose": "~3.6.13",
-    "body-parser": "~1.0.1",
-    "lodash": "~3.10.1"
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "lodash": "^3.10.1",
+    "sqlite": "^2.3.0",
+    "sqlite3": "^3.1.8"
   }
 }
