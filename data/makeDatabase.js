@@ -1,5 +1,5 @@
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('./table_tennis.db');
+var db = new sqlite3.Database('./data/table_tennis.db');
 var check;
 db.serialize(function() {
 
@@ -12,7 +12,7 @@ db.serialize(function() {
   }
   stmt.finalize();*/
 
-  db.run("INSERT INTO player(username, ranking) VALUES('daniel.browne', 1500)");
+  //db.run("INSERT INTO player(username, ranking) VALUES('daniel.browne', 1500)");
 
   db.each("SELECT rowid AS id, username, ranking FROM player", function(err, row) {
       console.log(row.id + ": " + row.username + " (" + row.ranking + ")");
