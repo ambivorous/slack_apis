@@ -1,3 +1,5 @@
+const RATINGS_CONSTANT = 32;
+
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./data/table_tennis.db');
 
@@ -38,44 +40,34 @@ function reserveTable(req, res) {
 
 // add match to the databse and update rankings
 function addMatch(req, res) {
-    var substring = req.body.text,
+
+    var message = req.body.text,
+        index,
+
         p1 = req.body.user_name,
         p2,
         p1Score,
         p2Score,
-        index,
-        dateInSeconds,
-        tempUsername,
-        tempScore,
-        returnMessage;
+
+        p1Ranking,
+        p2Ranking,
+        p1Expected,
+        p2Expected,
+
+        rankingChange,
+
+        dateInSeconds;
 
     // string manipulation nonsense
-    index = substring.indexOf(' ');
-    p1Score = Number(substring.substring(0, index));
-    substring = substring.substring(index + 1);
-    index = substring.indexOf(' ');
-    p2Score = Number(substring.substring(0, index));
-    substring = substring.substring(index + 1);
-    p2 = substring;
+    index = message.indexOf(' ');
+    p1Score = Number(message.substring(0, index));
 
-    // in case the loser is the one inputting the match results
-    if (p1Score < p2Score) {
-        tempUsername = p1;
-        tempScore = p1Score;
-        p1 = p2;
-        p1Score = p2Score;
-        p2 = tempUsername;
-        p2Score = tempScore;
-    }
+    message = message.substring(index + 1);
+    index = message.indexOf(' ');
+    p2Score = Number(message.substring(0, index));
 
-    // work out new ranking
-    var p1Ranking,
-        p2Ranking,
-        p1NewRanking,
-        p2NewRanking,
-        gamesPlayed,
-        expectedScore,
-        rankingChange;
+    message = message.substring(index + 1);
+    p2 = message;
 
     db.all("SELECT ranking FROM player WHERE username='" + p1 + "'", function(err, rows) {
         if (rows.length === 0) {
@@ -98,36 +90,21 @@ function addMatch(req, res) {
             p2Ranking = Number(rows[0].ranking);
 
             dateInSeconds = Date.now();
-
             db.run("INSERT INTO match(winner, winner_wins, loser, loser_wins, date) VALUES('" + p1 + "', '" + p1Score + "', '" + p2 + "', '" + p2Score + "', '" + dateInSeconds + "')");
 
-            // do math
-            gamesPlayed = p1Score + p2Score;
-            rankingChange = 0;
-            for (var i = 0; i < gamesPlayed; i++) {
-                if (p1Score - i > 0) {
-                    expectedScore = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
-                    rankingChange += Math.round(expectedScore * 32);
-                } else {
-                    expectedScore = 1 / (1 + Math.pow(10, ((p2Ranking - p1Ranking) / 400)));
-                    rankingChange -= Math.round(expectedScore * 32);
-                }
-            }
-            p1NewRanking = p1Ranking + rankingChange;
-            p2NewRanking = p2Ranking - rankingChange;
+            // work out new ranking
+            p1Expected = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
+            p2Expected = 1 - p1Expected;
+            rankingChange = Math.round(RATINGS_CONSTANT * ((p1Expected * p1Score) - (p2Expected * p2Score)));
+            p1Ranking += rankingChange;
+            p2Ranking -= rankingChange;
 
-            db.run("UPDATE player SET ranking = " + p1NewRanking + " WHERE username = '" + p1 + "'");
-            db.run("UPDATE player SET ranking = " + p2NewRanking + " WHERE username = '" + p2 + "'");
+            db.run("UPDATE player SET ranking = " + p1Ranking + " WHERE username = '" + p1 + "'");
+            db.run("UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'");
 
             res.json({
-                message: 'Added match to the database and updated players\' rankings: ' + p1 + ' (' + p1NewRanking + '); ' + p2 + ' (' + p2NewRanking + ').'
+                message: 'Added match to the database and updated players\' rankings: ' + p1 + ' (' + p1Ranking + '); ' + p2 + ' (' + p2Ranking + ').'
             });
         });
     });
-
-    /*res.json({
-        message: 'Works.',
-        route: 'table_tennis',
-        score: req.body.user_name + ' ' + req.body.text
-    });*/
 }
