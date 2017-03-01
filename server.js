@@ -23,7 +23,7 @@ require('./routes')(router);
 // prefix routes with /slack_apis
 app.use('/slack_apis', router);
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 5000;
 
 // start the server
 app.listen(port, function() {
