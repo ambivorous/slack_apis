@@ -11,9 +11,9 @@ db.serialize(function() {
       console.log(row.id + ": " + row.username + " (" + row.ranking + ")");
   });
 
-  /*db.each("SELECT * FROM match", function(err, row) {
+  db.each("SELECT * FROM match", function(err, row) {
       console.log(row.match_id + ": " + row.winner + " (" + row.winner_wins + ") " + row.loser + " (" + row.loser_wins + ") " + row.date);
-  });*/
+  });
 });
 
 db.close();
