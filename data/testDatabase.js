@@ -1,5 +1,5 @@
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('./database/data/table_tennis.db');
+var db = new sqlite3.Database('./data/table_tennis.db');
 
 db.serialize(function() {
 
