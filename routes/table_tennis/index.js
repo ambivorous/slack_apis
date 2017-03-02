@@ -1,7 +1,7 @@
 const RATINGS_CONSTANT = 32;
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('./data/table_tennis.db');
+var db = new sqlite3.Database('./database/data/table_tennis.db');
 
 module.exports = function(router) {
     router.post('/add-player', addPlayer);
