@@ -16,11 +16,11 @@ function addPlayer(req, res) {
         if (rows.length === 0) {
             db.run("INSERT INTO player(username, ranking) VALUES('" + req.body.user_name + "', 1500)");
             res.json({
-                message: req.body.user_name + ' added to the player list.'
+                text: req.body.user_name + ' added to the player list.'
             });
         } else {
             res.json({
-                message: 'Player ' + req.body.user_name + ' already exists.'
+                text: 'Player ' + req.body.user_name + ' already exists.'
             });
         }
     });
@@ -73,7 +73,7 @@ function addMatch(req, res) {
         if (rows.length === 0) {
             // can't find player 1
             res.json({
-                message: 'Can\'t find ' + p1 + ' in the player list.'
+                text: 'Can\'t find ' + p1 + ' in the player list.'
             });
             return;
         }
@@ -83,7 +83,7 @@ function addMatch(req, res) {
             if (rows.length === 0) {
                 // can't find player 2
                 res.json({
-                    message: 'Can\'t find ' + p2 + ' in the player list.'
+                    text: 'Can\'t find ' + p2 + ' in the player list.'
                 });
                 return;
             }
@@ -103,7 +103,13 @@ function addMatch(req, res) {
             db.run("UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'");
 
             res.json({
-                message: 'Added match to the database and updated players\' rankings: ' + p1 + ' (' + p1Ranking + '); ' + p2 + ' (' + p2Ranking + ').'
+                username: 'Table Tennis',
+                text: 'Added match to the database and updated players\' rankings.',
+                attachments: [
+                    {
+                        text: p1 + ': ' + p1Ranking + '\\n' + p2 + ': ' + p2Ranking
+                    }
+                ]
             });
         });
     });

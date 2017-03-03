@@ -14,7 +14,7 @@ var router = express.Router();
 
 // test route to make sure everything is working
 router.get('/', function(req, res) {
-    res.json({ message: 'Works.' });
+    res.json({ text: 'Working correctly.' });
 });
 
 // the rest of our routes
