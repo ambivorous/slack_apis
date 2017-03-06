@@ -9,18 +9,31 @@ module.exports = function(router) {
     router.post('/accept', reserveMatch); // potentially unneeded
     router.post('/shotgun', reserveTable);
     router.post('/record', addMatch);
+    router.get('/rankings', fetchRankings);
 };
 
 function addPlayer(req, res) {
-    db.all("SELECT * FROM player WHERE username='" + req.body.user_name + "'", function(err, rows) {
+    var username = req.body.username;
+
+    if (username === undefined || username === null || username === '') {
+        res.status(400);
+        res.json({
+            text:'Username entered is invalid.'
+        });
+        return;
+    }
+
+    db.all("SELECT * FROM player WHERE username='" + username + "'", function(err, rows) {
         if (rows.length === 0) {
-            db.run("INSERT INTO player(username, ranking) VALUES('" + req.body.user_name + "', 1500)");
+            db.run("INSERT INTO player(username, ranking) VALUES('" + username + "', 1500)");
+            res.status(201);
             res.json({
-                text: req.body.user_name + ' added to the player list.'
+                text: username + ' added to the player list.'
             });
         } else {
+            res.status(409);
             res.json({
-                text: 'Player ' + req.body.user_name + ' already exists.'
+                text: 'Player ' + username + ' already exists.'
             });
         }
     });
@@ -41,13 +54,10 @@ function reserveTable(req, res) {
 // add match to the databse and update rankings
 function addMatch(req, res) {
 
-    var message = req.body.text,
-        index,
-
-        p1 = req.body.user_name,
-        p2,
-        p1Score,
-        p2Score,
+    var p1 = req.body.player1,
+        p2 = req.body.player2,
+        p1Score = Number(req.body.score1),
+        p2Score = Number(req.body.score2),
 
         p1Ranking,
         p2Ranking,
@@ -57,17 +67,6 @@ function addMatch(req, res) {
         rankingChange,
 
         dateInSeconds;
-
-    // string manipulation nonsense
-    index = message.indexOf(' ');
-    p1Score = Number(message.substring(0, index));
-
-    message = message.substring(index + 1);
-    index = message.indexOf(' ');
-    p2Score = Number(message.substring(0, index));
-
-    message = message.substring(index + 1);
-    p2 = message;
 
     db.all("SELECT ranking FROM player WHERE username='" + p1 + "'", function(err, rows) {
         if (rows.length === 0) {
@@ -102,15 +101,28 @@ function addMatch(req, res) {
             db.run("UPDATE player SET ranking = " + p1Ranking + " WHERE username = '" + p1 + "'");
             db.run("UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'");
 
+            res.status(201);
             res.json({
                 username: 'Table Tennis',
                 text: 'Added match to the database and updated players\' rankings.',
                 attachments: [
                     {
-                        text: p1 + ': ' + p1Ranking + '\\n' + p2 + ': ' + p2Ranking
+                        text: p1 + ': ' + p1Ranking + '\n' + p2 + ': ' + p2Ranking
                     }
                 ]
             });
         });
+    });
+}
+
+function fetchRankings(req, res) {
+    rankings = [];
+
+    db.all("SELECT * FROM player ORDER BY ranking", function(err, rows) {
+        for (var i = 0; i < rows.length; i++) {
+            rankings.push({ username: rows[i].username, ranking: rows[i].ranking });
+        }
+
+        res.json(rankings);
     });
 }
