@@ -96,6 +96,10 @@ function addMatch(req, res) {
         res.status(400);
         res.json({ error: 'Input invalid.' });
         return;
+    } else if (p1 == p2) {
+        res.status(400);
+        res.json({ error: 'Stop playing with yourself.' });
+        return;
     }
 
     var p1Ranking, p2Ranking,
@@ -177,6 +181,8 @@ function fetchRankings(req, res) {
         }
 
         res.status(200);
-        res.json(rankings);
+        res.json({
+            rankings: rankings
+        });
     });
 }
