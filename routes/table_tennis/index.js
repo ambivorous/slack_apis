@@ -176,6 +176,7 @@ function fetchRankings(req, res) {
             rankings.push({ username: rows[i].username, ranking: rows[i].ranking });
         }
 
+        res.status(200);
         res.json(rankings);
     });
 }
