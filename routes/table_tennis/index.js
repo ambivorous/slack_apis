@@ -167,7 +167,7 @@ function addMatch(req, res) {
 function fetchRankings(req, res) {
     var rankings = [];
 
-    db.all("SELECT * FROM player ORDER BY ranking", function(err, rows) {
+    db.all("SELECT * FROM player ORDER BY ranking DESC", function(err, rows) {
         if (rows.length == 0) {
             res.status(204);
             res.json({
