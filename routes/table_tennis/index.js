@@ -104,11 +104,7 @@ function addMatch(req, res) {
 
     var p1Ranking, p2Ranking,
         p1Expected, p2Expected,
-        rankingChange,
-
-        p1Sign, p2Sign,
-
-        dateInSeconds;
+        rankingChange;
 
     db.all("SELECT ranking FROM player WHERE username='" + p1 + "'", function(err, rows) {
         if (rows.length === 0) {
@@ -126,9 +122,6 @@ function addMatch(req, res) {
             }
             p2Ranking = Number(rows[0].ranking);
 
-            dateInSeconds = Date.now();
-            db.run("INSERT INTO match(winner, winner_wins, loser, loser_wins, date) VALUES('" +p1 + "', '" + p1Score + "', '" + p2 + "', '" + p2Score + "', '" + dateInSeconds + "')");
-
             // work out new ranking
             p1Expected = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
             p2Expected = 1 - p1Expected;
@@ -136,6 +129,29 @@ function addMatch(req, res) {
             p1Ranking += rankingChange;
             p2Ranking -= rankingChange;
 
+            var winner, loser,
+                winnerWins, loserWins,
+                rankingGained,
+                dateInSeconds,
+                p1Sign, p2Sign;
+
+            if (p1Score >= p2Score) {
+                winner = p1;
+                loser = p2;
+                winnerWins = p1Score;
+                loserWins = p2Score;
+                rankingGained = rankingChange;
+            } else {
+                winner = p2;
+                loser = p1;
+                winnerWins = p2Score;
+                loserWins = p1Score;
+                rankingGained = -rankingChange;
+            }
+            dateInSeconds = Date.now();
+
+            db.run("INSERT INTO match(winner, winner_wins, loser, loser_wins, date, ranking_change) VALUES('"
+                + winner + "', '" + winnerWins + "', '" + loser + "', '" + loserWins + "', '" + dateInSeconds + "', '" + rankingGained +"')");
             db.run("UPDATE player SET ranking = " + p1Ranking + " WHERE username = '" + p1 + "'");
             db.run("UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'");
 

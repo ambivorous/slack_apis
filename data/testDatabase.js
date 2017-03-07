@@ -7,12 +7,12 @@ db.serialize(function() {
 
   //db.run("UPDATE player SET ranking = 1500 WHERE username = 'daniel.browne'");
 
-  db.each("SELECT rowid AS id, username, ranking FROM player", function(err, row) {
-      console.log(row.id + ": " + row.username + " (" + row.ranking + ")");
+  db.each("SELECT * FROM player", function(err, row) {
+      console.log(row.username + " (" + row.ranking + ")");
   });
 
   db.each("SELECT * FROM match", function(err, row) {
-      console.log(row.match_id + ": " + row.winner + " (" + row.winner_wins + ") " + row.loser + " (" + row.loser_wins + ") " + row.date);
+      console.log(row.match_id + ": " + row.winner + " (" + row.winner_wins + ") " + row.loser + " (" + row.loser_wins + ") [" + row.ranking_change + "] " + row.date);
   });
 });
 
