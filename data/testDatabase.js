@@ -12,7 +12,7 @@ db.serialize(function() {
   });
 
   db.each("SELECT * FROM match", function(err, row) {
-      console.log(row.match_id + ": " + row.winner + " (" + row.winner_wins + ") " + row.loser + " (" + row.loser_wins + ") [" + row.ranking_change + "] " + row.date);
+      console.log(row.match_id + ": " + row.winner + " (" + row.winner_wins + ") " + row.loser + " (" + row.loser_wins + ") [" + row.ranking_change + "] " + Date(row.date));
   });
 });
 
