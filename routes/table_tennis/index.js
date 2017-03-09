@@ -25,7 +25,7 @@ function addPlayer(req, res) {
         return;
     }
 
-    db.get("SELECT username FROM player WHERE username = ?", [ username ] , function(err, row) {
+    db.get("SELECT username FROM user WHERE username = ?", [ username ] , function(err, row) {
         if (row) {
             res.status(409);
             res.json({ error: 'Player ' + username + ' already exists.' });
@@ -33,7 +33,7 @@ function addPlayer(req, res) {
         }
 
         if (mode != "test") {
-            db.run("INSERT INTO player(username, ranking) VALUES(?, 1500)", [ username ], function(err) {
+            db.run("INSERT INTO user (username, ranking) VALUES (?, 1500)", [ username ], function(err) {
                 if (err) {
                     res.status(500);
                     res.json({ error: 'INSERT failed: ' + err });
@@ -68,7 +68,7 @@ function removePlayer(req, res) {
         return;
     }
 
-    db.get("SELECT username FROM player WHERE username = ?", [ username ], function(err, row) {
+    db.get("SELECT username FROM user WHERE username = ?", [ username ], function(err, row) {
         if (!row) {
             res.status(404);
             res.json({ error: 'Player ' + username + ' doesn\'t exists.' });
@@ -83,7 +83,7 @@ function removePlayer(req, res) {
             }
 
             if (mode != "test") {
-                db.run("DELETE FROM player WHERE username = ?", [ username ], function(err) {
+                db.run("DELETE FROM user WHERE username = ?", [ username ], function(err) {
                     if (err) {
                         res.status(500);
                         res.json({ error: 'DELETE failed: ' + err });
@@ -139,34 +139,37 @@ function addMatch(req, res) {
     }
 
     var p1Ranking, p2Ranking,
+        p1ID, p2ID,
         p1Expected, p2Expected,
         rankingChange,
         weighting;
     var startDate,
         startDateInSeconds;
 
-    db.get("SELECT ranking FROM player WHERE username = ?", [ p1 ], function(err, row) {
+    db.get("SELECT user_id, ranking FROM user WHERE username = ?", [ p1 ], function(err, row) {
         if (!row) {
             res.status(404);
             res.json({ error: 'Can\'t find ' + p1 + ' in the player list.' });
             return;
         }
         p1Ranking = Number(row.ranking);
+        p1ID = Number(row.user_id);
 
-        db.get("SELECT ranking FROM player WHERE username = ?", [ p2 ],  function(err, row) {
+        db.get("SELECT user_id, ranking FROM user WHERE username = ?", [ p2 ],  function(err, row) {
             if (!row) {
                 res.status(404);
                 res.json({ error: 'Can\'t find ' + p2 + ' in the player list.' });
                 return;
             }
             p2Ranking = Number(row.ranking);
+            p2ID = Number(row.user_id);
 
             startDate = new Date();
             startDate.setDate(startDate.getDate() - 28);
             startDateInSeconds = startDate.getTime();
 
             db.get("SELECT COUNT(match_id) AS count FROM match WHERE ((winner = ?1 AND loser = ?2) OR (winner = ?2 AND loser = ?1)) AND date > ?3",
-                [ p1, p2, startDateInSeconds ], function(err, row) {
+                [ p1ID, p2ID, startDateInSeconds ], function(err, row) {
 
                 // work out new ranking
                 if (row.count >= 20) {
@@ -188,14 +191,14 @@ function addMatch(req, res) {
                 var p1Sign, p2Sign;
 
                 if (p1Score >= p2Score) {
-                    winner = p1;
-                    loser = p2;
+                    winner = p1ID;
+                    loser = p2ID;
                     winnerWins = p1Score;
                     loserWins = p2Score;
                     rankingGained = rankingChange;
                 } else {
-                    winner = p2;
-                    loser = p1;
+                    winner = p2ID;
+                    loser = p1ID;
                     winnerWins = p2Score;
                     loserWins = p1Score;
                     rankingGained = -rankingChange;
@@ -212,10 +215,10 @@ function addMatch(req, res) {
                 dateInSeconds = Date.now();
 
                 var query = "BEGIN TRANSACTION; "
-                    + "INSERT INTO match(winner, winner_wins, loser, loser_wins, date, ranking_change) VALUES('"
+                    + "INSERT INTO match (winner, winner_wins, loser, loser_wins, date, ranking_change) VALUES ('"
                     + winner + "', '" + winnerWins + "', '" + loser + "', '" + loserWins + "', '" + dateInSeconds + "', '" + rankingGained + "'); "
-                    + "UPDATE player SET ranking = " + p1Ranking + " WHERE username = '" + p1 + "'; "
-                    + "UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'; "
+                    + "UPDATE user SET ranking = " + p1Ranking + " WHERE user_id = '" + p1ID + "'; "
+                    + "UPDATE user SET ranking = " + p2Ranking + " WHERE user_id = '" + p2ID + "'; "
                     + "COMMIT"
 
                 if (mode != "test") {
@@ -321,7 +324,7 @@ function addMatch(req, res) {
 function fetchRankings(req, res) {
     var rankings = [];
 
-    db.all("SELECT * FROM player ORDER BY ranking DESC", function(err, rows) {
+    db.all("SELECT * FROM user ORDER BY ranking DESC", function(err, rows) {
         if (rows.length == 0) {
             res.status(204);
             res.json({

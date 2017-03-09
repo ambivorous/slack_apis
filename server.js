@@ -7,7 +7,7 @@ var express = require('express'),
     app = express();
 
 // update the database on each startup
-require('./data/update_database.js')();
+require('./data/table_tennis/update_database.js')();
 
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
