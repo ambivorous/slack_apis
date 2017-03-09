@@ -6,6 +6,9 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express();
 
+// update the database on each startup
+require('./data/update_database.js')();
+
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

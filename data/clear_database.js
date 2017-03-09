@@ -2,8 +2,8 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./data/table_tennis.db');
 
 db.serialize(function() {
-  db.run("DELETE FROM player");
-  db.run("DELETE FROM match");
+    db.run("DELETE FROM player");
+    db.run("DELETE FROM match");
 });
 
 db.close();
