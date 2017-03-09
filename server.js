@@ -1,6 +1,6 @@
 // server.js
 
-'user strict';
+'use strict';
 
 var express = require('express'),
     bodyParser = require('body-parser'),
@@ -24,7 +24,7 @@ router.get('/', function(req, res) {
 require('./routes')(router);
 
 // prefix routes with /slack_apis
-app.use('/slack_apis', router);
+app.use('/slack-apis', router);
 
 var port = process.env.PORT || 5000;
 

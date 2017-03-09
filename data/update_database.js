@@ -7,14 +7,9 @@ module.exports = function() {
     var query = "BEGIN TRANSACTION; ";
 
     db.get("SELECT version FROM version WHERE key = ?", [ "database" ], function(err, row) {
-        if (row.version) {
-            version = row.version;
-        } else {
-            // no database version yet (log file)
-        }
+        version = row.version;
 
         if (version < latest) {
-            // EXAMPLE: update to latest
             query += "UPDATE version SET version = " + latest + " WHERE key = 'database'; ";
         }
         query += "COMMIT";

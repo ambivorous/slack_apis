@@ -17,6 +17,7 @@ module.exports = function(router) {
 // add a new player to the database
 function addPlayer(req, res) {
     var username = req.body.username;
+    var mode = req.query.mode;
 
     if (!username) {
         res.status(400);
@@ -31,25 +32,35 @@ function addPlayer(req, res) {
             return;
         }
 
-        db.run("INSERT INTO player(username, ranking) VALUES(?, 1500)", [ username ], function(err) {
-            if (err) {
-                res.status(500);
-                res.json({ error: 'INSERT failed: ' + err });
-                return;
-            }
+        if (mode != "test") {
+            db.run("INSERT INTO player(username, ranking) VALUES(?, 1500)", [ username ], function(err) {
+                if (err) {
+                    res.status(500);
+                    res.json({ error: 'INSERT failed: ' + err });
+                    return;
+                }
 
-            res.status(201);
+                res.status(201);
+                res.json({
+                    text: username + ' added to the player list.'
+                });
+                return;
+            });
+        } else {
+            res.status(200);
             res.json({
+                mode: 'test',
                 text: username + ' added to the player list.'
             });
             return;
-        });
+        }
     });
 }
 
 // remove a player provided he has no matches
 function removePlayer(req, res) {
     var username = req.body.username;
+    var mode = req.query.mode;
 
     if (!username) {
         res.status(400);
@@ -71,19 +82,28 @@ function removePlayer(req, res) {
                 return;
             }
 
-            db.run("DELETE FROM player WHERE username = ?", [ username ], function(err) {
-                if (err) {
-                    res.status(500);
-                    res.json({ error: 'DELETE failed: ' + err });
-                    return;
-                }
+            if (mode != "test") {
+                db.run("DELETE FROM player WHERE username = ?", [ username ], function(err) {
+                    if (err) {
+                        res.status(500);
+                        res.json({ error: 'DELETE failed: ' + err });
+                        return;
+                    }
 
+                    res.status(200);
+                    res.json({
+                        text: 'Player deleted.'
+                    });
+                    return;
+                });
+            } else {
                 res.status(200);
                 res.json({
+                    mode: 'test',
                     text: 'Player deleted.'
                 });
                 return;
-            });
+            }
         });
     });
 }
@@ -106,6 +126,7 @@ function addMatch(req, res) {
         p2 = req.body.player2,
         p1Score = Number(req.body.score1),
         p2Score = Number(req.body.score2);
+    var mode = req.query.mode;
 
     if (!p1 || !p2 || p1Score < 0 || p2Score < 0) {
         res.status(400);
@@ -144,15 +165,16 @@ function addMatch(req, res) {
             startDate.setDate(startDate.getDate() - 28);
             startDateInSeconds = startDate.getTime();
 
-            db.get("SELECT COUNT(match_id) AS count FROM match WHERE ((winner = ?1 AND loser = ?2) OR (winner = ?2 AND loser = ?1)) AND date > ?3", [ p1, p2, startDateInSeconds ], function(err, row) {
+            db.get("SELECT COUNT(match_id) AS count FROM match WHERE ((winner = ?1 AND loser = ?2) OR (winner = ?2 AND loser = ?1)) AND date > ?3",
+                [ p1, p2, startDateInSeconds ], function(err, row) {
+
+                // work out new ranking
                 if (row.count >= 20) {
                     weighting = 0.25;
                 } else {
-                    //weighting = 1 - (((row.count * row.count) * 3)/1600); // y = -(x^2)*3/1600 + 1
                     weighting = 1 - ((row.count * 3)/80); // y = -x*3/80 + 1
                 }
 
-                // work out new ranking
                 p1Expected = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
                 p2Expected = 1 - p1Expected;
                 rankingChange = Math.round(RATINGS_CONSTANT * ((p1Expected * p1Score) - (p2Expected * p2Score)) * weighting);
@@ -196,15 +218,32 @@ function addMatch(req, res) {
                     + "UPDATE player SET ranking = " + p2Ranking + " WHERE username = '" + p2 + "'; "
                     + "COMMIT"
 
-                db.exec(query, function(err) {
-                    if (err) {
-                        res.status(500);
-                        res.json({ error: 'Updating database failed: ' + err });
-                        return;
-                    }
+                if (mode != "test") {
+                    db.exec(query, function(err) {
+                        if (err) {
+                            res.status(500);
+                            res.json({ error: 'Updating database failed: ' + err });
+                            return;
+                        }
 
+                        res.status(200);
+                        res.json({
+                            p1Ranking: p1Ranking,
+                            p2Ranking: p2Ranking,
+                            rankingChange: rankingChange,
+                            text: 'Added match to the database and updated players\' rankings.',
+                            attachments: [
+                                {
+                                    text: p1 + ': ' + p1Ranking + ' (' + p1Sign + Math.abs(rankingChange) + ')\n'
+                                        + p2 + ': ' + p2Ranking + ' (' + p2Sign + Math.abs(rankingChange) + ')'
+                                }
+                            ]
+                        });
+                    });
+                } else {
                     res.status(200);
                     res.json({
+                        mode: 'test',
                         p1Ranking: p1Ranking,
                         p2Ranking: p2Ranking,
                         rankingChange: rankingChange,
@@ -216,7 +255,7 @@ function addMatch(req, res) {
                             }
                         ]
                     });
-                });
+                }
             });
         });
     });
