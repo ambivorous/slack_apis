@@ -6,6 +6,7 @@ var db = new sqlite3.Database('./data/table_tennis.db');
 module.exports = function(router) {
     router.post('/table-tennis/add-player', addPlayer);
     router.post('/table-tennis/remove-player', removePlayer);
+    router.post('/table-tennis/set-nickname', setNickname);
     router.post('/table-tennis/challenge', challengePlayer);
     router.post('/table-tennis/accept', reserveMatch); // potentially unneeded
     router.post('/table-tennis/reserve-table', reserveTable);
@@ -105,6 +106,49 @@ function removePlayer(req, res) {
                 return;
             }
         });
+    });
+}
+
+function setNickname(req, res) {
+    var username = req.body.username;
+    var nickname = req.body.nickname;
+    var mode = req.query.mode;
+
+    if (!username || !nickname) {
+        res.status(400);
+        res.json({ error: 'Input is invalid.' });
+        return;
+    }
+
+    db.get("SELECT username FROM user WHERE username = ?", [ username ], function(err, row) {
+        if (!row) {
+            res.status(404);
+            res.json({ error: 'Player ' + username + ' doesn\'t exists.' });
+            return;
+        }
+
+        if (mode != "test") {
+            db.run("UPDATE user SET nickname = ? WHERE username = ?", [ nickname, username ], function(err) {
+                if (err) {
+                    res.status(500);
+                    res.json({ error: 'UPDATE failed: ' + err });
+                    return;
+                }
+
+                res.status(201);
+                res.json({
+                    text: 'Nickname \'' + nickname + '\' added to player ' + username + '.'
+                });
+                return;
+            });
+        } else {
+            res.status(200);
+            res.json({
+                mode: 'test',
+                text: 'Nickname \'' + nickname + '\' added to player ' + username + '.'
+            });
+            return;
+        }
     });
 }
 
@@ -334,7 +378,7 @@ function fetchRankings(req, res) {
         }
 
         for (var i = 0; i < rows.length; i++) {
-            rankings.push({ username: rows[i].username, ranking: rows[i].ranking });
+            rankings.push({ nickname: rows[i].nickname, username: rows[i].username, ranking: rows[i].ranking });
         }
 
         res.status(200);
