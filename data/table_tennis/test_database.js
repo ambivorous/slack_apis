@@ -2,6 +2,12 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./data/table_tennis.db');
 
 db.serialize(function() {
+    db.run("UPDATE user SET username = 'clive' WHERE username = 'clive.crous'");
+    db.run("UPDATE user SET username = 'peet' WHERE username = 'peet.joubert'");
+    db.run("UPDATE match SET ranking_change = 32 WHERE match_id = 8");
+    db.run("UPDATE match SET ranking_change = 32 WHERE match_id = 9");
+    db.run("UPDATE match SET ranking_change = 35 WHERE match_id = 10");
+
     db.each("SELECT * FROM user", function(err, row) {
         console.log(row.user_id + ": " + row.username + " (" + row.ranking + ")");
     });
