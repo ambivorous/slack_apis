@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Table Tennis Rankings</title>
+        <meta name ="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="/table-tennis/css/style.css" rel="stylesheet">
+    </head>
+
+    <body ng-app="table-tennis" id="table-tennis">
+        <div id="content">
+            <div ng-controller="rankingsCtrl">
+                <div id="rankings">
+                    <h3>Rankings</h3>
+                    <table>
+                        <tr>
+                            <th>Player</th>
+                            <th>Ranking</th>
+                        </tr>
+                        <tr ng-repeat="record in records">
+                            <td>
+                                {{ record.display_name }}
+                            </td>
+                            <td>
+                                {{ record.ranking }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <script src="/table-tennis/js/script.js"></script>
+    </body>
+</html>

@@ -3,7 +3,7 @@ var db = new sqlite3.Database('./data/table_tennis.db');
 
 db.serialize(function() {
     db.each("SELECT * FROM user", function(err, row) {
-        console.log(row.user_id + ": " + row.username + " (" + row.ranking + ")");
+        console.log(row.user_id + ": " + row.username + " \"" + row.nickname + "\" (" + row.ranking + ")");
     });
 
     db.each("SELECT match.match_id AS match_id, match.winner_wins AS winner_wins, match.loser_wins AS loser_wins, match.ranking_change AS ranking_change, "

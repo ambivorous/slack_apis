@@ -5,12 +5,13 @@ var db = new sqlite3.Database('./data/table_tennis.db');
 
 module.exports = function() {
     var version;
-    var query = "BEGIN TRANSACTION; ";
+    var query = "";
 
     db.get("SELECT version FROM version WHERE key = ?", [ "database" ], function(err, row) {
         version = row.version;
 
-        if (version < LATEST) {
+        if (version < 1.1) {
+            query += "BEGIN TRANSACTION; ";
             query += "CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY UNIQUE, username TEXT UNIQUE, nickname TEXT, ranking INTEGER); ";
             query += "INSERT INTO user (user_id, username, ranking) SELECT rowid, username, ranking FROM player; ";
             query += "DROP TABLE player; ";
@@ -26,9 +27,12 @@ module.exports = function() {
                 + "SELECT match_id, winner_id, winner_wins, loser_id, loser_wins, date, ranking_change FROM match_orig; ";
             query += "DROP TABLE match_orig; ";
 
-            query += "UPDATE version SET version = " + LATEST + " WHERE key = 'database'; ";
+            query += "UPDATE version SET version = " + 1.1 + " WHERE key = 'database'; ";
+            query += "COMMIT; ";
         }
-        query += "COMMIT";
+        if (version < LATEST) {
+            // next release
+        }
 
         if (version < LATEST) {
             db.exec(query, function(err) {

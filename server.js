@@ -4,6 +4,7 @@
 
 var express = require('express'),
     bodyParser = require('body-parser'),
+    ejs = require('ejs'),
     app = express();
 
 // update the database on each startup
@@ -13,12 +14,18 @@ require('./data/table_tennis/update_database.js')();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var router = express.Router();
+// user EJS for templates
+app.engine('html', ejs.renderFile);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'html');
 
-// test route to make sure everything is working
-router.get('/', function(req, res) {
-    res.json({ text: 'Working correctly.' });
+// set up paths for webpages
+app.get('/table-tennis', function(req, res) {
+    res.render('index');
 });
+app.use('/table-tennis', express.static(__dirname + '/www'));
+
+var router = express.Router();
 
 // the rest of our routes
 require('./routes')(router);
