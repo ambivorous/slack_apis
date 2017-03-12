@@ -1,11 +1,42 @@
 body {
-    background-color: #000;
+    background-color: #feb;
+    margin: 0px;
 }
-
-h3 {
-    color: #fff;
-}
-
 table {
-    color: #fff;
+    width: 100%;
+    border-collapse: collapse;
+}
+tr, th, td {
+    border: 1px solid #631;
+}
+tr:hover {
+    background-color: #fc8;
+}
+th, td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+
+#content {
+    padding-top: 20px;
+}
+#rankings-box {
+    color: #631;
+    position: relative;
+    background-color: #fb6;
+    max-width: 720px;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+.header {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-top: 1px solid #631;
+    border-left: 1px solid #631;
+    border-right: 1px solid #631;
+    border-bottom: 0px;
 }

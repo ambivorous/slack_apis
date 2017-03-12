@@ -29,6 +29,7 @@ app.controller("rankingsCtrl", function($scope, $http) {
                 }
 
                 records.push({
+                    index: i + 1,
                     display_name: displayName,
                     ranking: rankings[i].ranking
                 });
