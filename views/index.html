@@ -6,33 +6,15 @@
         <meta name ="viewport" content="width=device-width, initial-scale=1">
 
         <link href="/table-tennis/css/style.css" rel="stylesheet">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
+        <script src="/table-tennis/js/script.js"></script>
     </head>
 
     <body ng-app="table-tennis" id="table-tennis">
         <div id="content">
-            <div id="rankings-box" ng-controller="rankingsCtrl">
-                <div class="header">Rankings</div>
-                <table>
-                    <tr>
-                        <th>#</th>
-                        <th>Ranking</th>
-                        <th>Player</th>
-                    </tr>
-                    <tr ng-repeat="record in records">
-                        <td>
-                            {{ record.index }}
-                        </td>
-                        <td>
-                            {{ record.ranking }}
-                        </td>
-                        <td>
-                            {{ record.display_name }}
-                        </td>
-                    </tr>
-                </table>
-            </div>
+            <div ui-view></div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-        <script src="/table-tennis/js/script.js"></script>
     </body>
 </html>

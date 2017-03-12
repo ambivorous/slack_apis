@@ -1,0 +1,21 @@
+<div id="rankings-box" class="table-box" ng-controller="rankingsCtrl">
+    <div class="header">Rankings</div>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Ranking</th>
+            <th>Player</th>
+        </tr>
+        <tr ng-repeat="player in players">
+            <td>
+                {{ player.index }}
+            </td>
+            <td>
+                {{ player.ranking }}
+            </td>
+            <td>
+                {{ player.display_name }}
+            </td>
+        </tr>
+    </table>
+</div>

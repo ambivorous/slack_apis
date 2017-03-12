@@ -20,15 +20,13 @@ th {
 }
 
 #content {
-    padding-top: 20px;
+    padding: 20px;
 }
 #rankings-box {
-    color: #631;
-    position: relative;
-    background-color: #fb6;
     max-width: 720px;
-    margin: auto;
-    border-collapse: collapse;
+}
+#match-history-box {
+    max-width: 1080px;
 }
 
 .header {
@@ -40,3 +38,10 @@ th {
     border-right: 1px solid #631;
     border-bottom: 0px;
 }
+ .table-box {
+    color: #631;
+    position: relative;
+    background-color: #fb6;
+    margin: auto;
+    border-collapse: collapse;
+ }
