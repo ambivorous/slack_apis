@@ -1,44 +1,61 @@
+html {
+    height: 100%;
+}
 body {
-    background-color: #fff;
     margin: 0px;
+    font-family: Verdana;
 }
 table {
     width: 100%;
     border-collapse: collapse;
 }
-tr, th, td {
-    border-top: 1px solid #aac;
+tr {
+    font-size: 11pt;
 }
 th, td {
-    padding: 5px;
+    padding: 10px;
 }
 th {
     text-align: left;
+    font-weight: normal;
 }
 
 #content {
     padding: 20px;
 }
 #rankings-box {
-    max-width: 720px;
+    max-width: 1024px;
 }
 #match-history-box {
-    max-width: 1080px;
+    max-width: 1024px;
 }
 
-.header {
-    padding: 10px;
-    text-align: center;
-    font-weight: bold;
-    background-color: #334;
-    color: #fff;
-}
-.table-box {
+.content-box {
     position: relative;
     margin: auto;
-    border-collapse: collapse;
+}
+.header {
+    font-size: 12pt;
+    padding: 15px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #334;
+    background: linear-gradient(to right, #334 , #223);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.table-box {
     color: #334;
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid #667;
+    border-top: none;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
  }
+.column-headings {
+    border-bottom: 1px solid #667;
+}
 .column-values:hover {
     background-color: #cef;
 }

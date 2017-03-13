@@ -1,21 +1,23 @@
-<div id="rankings-box" class="table-box" ng-controller="rankingsCtrl">
+<div id="rankings-box" class="content-box" ng-controller="rankingsCtrl">
     <div class="header">Rankings</div>
-    <table>
-        <tr class="column-headings">
-            <th>#</th>
-            <th>Ranking</th>
-            <th>Player</th>
-        </tr>
-        <tr class="column-values" ng-repeat="player in players">
-            <td>
-                {{ player.index }}
-            </td>
-            <td>
-                {{ player.ranking }}
-            </td>
-            <td>
-                {{ player.display_name }}
-            </td>
-        </tr>
-    </table>
+    <div class="table-box">
+        <table>
+            <tr class="column-headings">
+                <th>#</th>
+                <th>Ranking</th>
+                <th>Player</th>
+            </tr>
+            <tr class="column-values" ng-repeat="player in players">
+                <td>
+                    {{ player.index }}
+                </td>
+                <td>
+                    {{ player.ranking }}
+                </td>
+                <td>
+                    {{ player.display_name }}
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
