@@ -19,6 +19,7 @@ th {
 
 #header {
     height: 50px;
+    background-color: #333;
     background: linear-gradient(to right, #333 , #222);
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }

@@ -13,6 +13,7 @@ module.exports = function(router) {
     router.post('/table-tennis/add-match', addMatch);
     //router.post('/table-tennis/remove-match', removeMatch);
     router.get('/table-tennis/rankings', fetchRankings);
+    router.get('/table-tennis/match-history', fetchMatchHistory);
 };
 
 // add a new player to the database
@@ -120,10 +121,17 @@ function setNickname(req, res) {
         return;
     }
 
-    db.get("SELECT username FROM user WHERE username = ?", [ username ], function(err, row) {
+    db.get("SELECT * FROM user WHERE username = ?", [ username ], function(err, row) {
         if (!row) {
             res.status(404);
             res.json({ error: 'Player ' + username + ' doesn\'t exists.' });
+            return;
+        }
+        if (nickname == row.nickname) {
+            res.status(200);
+            res.json({
+                error: 'Nickname unchanged.'
+            });
             return;
         }
 
@@ -378,12 +386,52 @@ function fetchRankings(req, res) {
         }
 
         for (var i = 0; i < rows.length; i++) {
-            rankings.push({ nickname: rows[i].nickname, username: rows[i].username, ranking: rows[i].ranking });
+            rankings.push({
+                nickname: rows[i].nickname,
+                username: rows[i].username,
+                ranking: rows[i].ranking
+            });
         }
 
         res.status(200);
         res.json({
             rankings: rankings
+        });
+    });
+}
+
+function fetchMatchHistory(req, res) {
+    var matchHistory = [];
+
+    db.all("SELECT match.match_id AS match_id, match.winner_wins AS winner_wins, match.loser_wins AS loser_wins, match.ranking_change AS ranking_change, "
+        + "match.date AS date, winner.username AS winner, winner.nickname AS winner_nickname, loser.username AS loser, loser.nickname AS loser_nickname "
+        + "FROM match INNER JOIN user AS winner ON match.winner = winner.user_id INNER JOIN user AS loser ON match.loser = loser.user_id ORDER BY date DESC",
+        function(err, rows) {
+
+        if (rows.length == 0) {
+            res.status(204);
+            res.json({
+                text: 'No matches in the database.'
+            });
+            return;
+        }
+
+        for (var i = 0; i < rows.length; i++) {
+            matchHistory.push({
+                winner: rows[i].winner,
+                winner_nickname: rows[i].winner_nickname,
+                winner_wins: rows[i].winner_wins,
+                loser: rows[i].loser,
+                loser_nickname: rows[i].loser_nickname,
+                loser_wins: rows[i].loser_wins,
+                ranking_change:  rows[i].ranking_change,
+                date: rows[i].date
+            });
+        }
+
+        res.status(200);
+        res.json({
+            matchHistory: matchHistory
         });
     });
 }

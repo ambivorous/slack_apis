@@ -92,19 +92,28 @@ app.controller('matchHistoryCtrl', [
         .success(function(data, status, headers, config) {
             var matchHistory = data.matchHistory;
             var matches = [];
+            var winnerDisplay;
+            var loserDisplay;
             var score;
 
             for (var i = 0; i < matchHistory.length; i++) {
-                if (matchHistory[i].nickname) {
-                    score = matchHistory[i].nickname + ' (' + matchHistory[i].username + ')';
+                if (matchHistory[i].winner_nickname) {
+                    winnerDisplay = matchHistory[i].winner_nickname + ' (' + matchHistory[i].winner + ')';
                 } else {
-                    score = matchHistory[i].username;
+                    winnerDisplay = matchHistory[i].winner;
                 }
+                if (matchHistory[i].loser_nickname) {
+                    loserDisplay = matchHistory[i].loser_nickname + ' (' + matchHistory[i].loser + ')';
+                } else {
+                    loserDisplay = matchHistory[i].loser;
+                }
+                score = '(' + matchHistory[i].winner_wins + ' - ' + matchHistory[i].loser_wins + ')';
 
                 matches.push({
-                    index: i + 1,
-                    display_name: score,
-                    ranking: rankings[i].ranking
+                    date: matchHistory[i].date,
+                    winner: winnerDisplay,
+                    score: score,
+                    loser: loserDisplay
                 });
             }
 

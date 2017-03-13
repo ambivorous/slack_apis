@@ -1,25 +1,27 @@
-<div id="match-history-box" class="table-box" ng-controller="matchHistoryCtrl">
+<div id="match-history-box" class="content-box" ng-controller="matchHistoryCtrl">
     <div class="header">Match History</div>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Winner</th>
-            <th>Score</th>
-            <th>Loser</th>
-        </tr>
-        <tr ng-repeat="match in matches">
-            <td>
-                {{ match.date | date }}
-            </td>
-            <td>
-                {{ match.winner }}
-            </td>
-            <td>
-                {{ match.score }}
-            </td>
-            <td>
-                {{ match.loser }}
-            </td>
-        </tr>
-    </table>
+    <div class="table-box">
+        <table>
+            <tr class="column-headings">
+                <th>Winner</th>
+                <th>Score</th>
+                <th>Loser</th>
+                <th>Date</th>
+            </tr>
+            <tr class="column-values" ng-repeat="match in matches">
+                <td>
+                    {{ match.winner }}
+                </td>
+                <td>
+                    {{ match.score }}
+                </td>
+                <td>
+                    {{ match.loser }}
+                </td>
+                <td>
+                    {{ match.date | date:"HH:mm 'on' dd/MM/yyyy" }}
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
