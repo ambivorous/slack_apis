@@ -1,5 +1,5 @@
 body {
-    background-color: #feb;
+    background-color: #fff;
     margin: 0px;
 }
 table {
@@ -7,10 +7,7 @@ table {
     border-collapse: collapse;
 }
 tr, th, td {
-    border: 1px solid #631;
-}
-tr:hover {
-    background-color: #fc8;
+    border-top: 1px solid #aac;
 }
 th, td {
     padding: 5px;
@@ -33,15 +30,15 @@ th {
     padding: 10px;
     text-align: center;
     font-weight: bold;
-    border-top: 1px solid #631;
-    border-left: 1px solid #631;
-    border-right: 1px solid #631;
-    border-bottom: 0px;
+    background-color: #334;
+    color: #fff;
 }
- .table-box {
-    color: #631;
+.table-box {
     position: relative;
-    background-color: #fb6;
     margin: auto;
     border-collapse: collapse;
+    color: #334;
  }
+.column-values:hover {
+    background-color: #cef;
+}

@@ -1,12 +1,12 @@
 <div id="rankings-box" class="table-box" ng-controller="rankingsCtrl">
     <div class="header">Rankings</div>
     <table>
-        <tr>
+        <tr class="column-headings">
             <th>#</th>
             <th>Ranking</th>
             <th>Player</th>
         </tr>
-        <tr ng-repeat="player in players">
+        <tr class="column-values" ng-repeat="player in players">
             <td>
                 {{ player.index }}
             </td>
