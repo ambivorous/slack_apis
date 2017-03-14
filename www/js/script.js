@@ -39,6 +39,10 @@ app.config(['$stateProvider', '$urlRouterProvider',
                 displayName: "Match History"
             }
         })
+        .state('match-history.player', {
+            url: '/:username',
+            templateUrl: 'app/views/match-history/match-history.html',
+        })
         .state('player', {
             url: '/player',
             templateUrl: 'app/views/player/player.html',
@@ -84,11 +88,18 @@ app.controller('rankingsCtrl', [
 }]);
 
 app.controller('matchHistoryCtrl', [
-    '$scope', '$http',
-    function($scope, $http) {
+    '$scope', '$http', '$stateParams',
+    function($scope, $http, $stateParams) {
+    var endpoint;
+
+    if ($stateParams.username) {
+        endpoint = '/slack-apis/table-tennis/match-history/' + $stateParams.username;
+    } else {
+        endpoint = '/slack-apis/table-tennis/match-history/';
+    }
 
     function init() {
-        $http.get('/slack-apis/table-tennis/match-history/')
+        $http.get(endpoint)
         .success(function(data, status, headers, config) {
             var matchHistory = data.matchHistory;
             var matches = [];

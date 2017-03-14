@@ -14,6 +14,7 @@ module.exports = function(router) {
     //router.post('/table-tennis/remove-match', removeMatch);
     router.get('/table-tennis/rankings', fetchRankings);
     router.get('/table-tennis/match-history', fetchMatchHistory);
+    router.get('/table-tennis/match-history/:username', fetchMatchHistory);
 };
 
 // add a new player to the database
@@ -401,13 +402,20 @@ function fetchRankings(req, res) {
 }
 
 function fetchMatchHistory(req, res) {
+    var username = req.params.username;
     var matchHistory = [];
 
-    db.all("SELECT match.match_id AS match_id, match.winner_wins AS winner_wins, match.loser_wins AS loser_wins, match.ranking_change AS ranking_change, "
+    var query = "SELECT match.match_id AS match_id, match.winner_wins AS winner_wins, match.loser_wins AS loser_wins, match.ranking_change AS ranking_change, "
         + "match.date AS date, winner.username AS winner, winner.nickname AS winner_nickname, loser.username AS loser, loser.nickname AS loser_nickname "
-        + "FROM match INNER JOIN user AS winner ON match.winner = winner.user_id INNER JOIN user AS loser ON match.loser = loser.user_id ORDER BY date DESC",
-        function(err, rows) {
+        + "FROM match INNER JOIN user AS winner ON match.winner = winner.user_id INNER JOIN user AS loser ON match.loser = loser.user_id ";
 
+    if (username) {
+        query += "WHERE winner.username = \"" + username + "\" OR loser.username = \"" + [ username ] + "\" ";
+    }
+
+    query += "ORDER BY date DESC";
+
+    db.all(query, function(err, rows) {
         if (rows.length == 0) {
             res.status(204);
             res.json({
