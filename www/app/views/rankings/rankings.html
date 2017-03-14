@@ -1,25 +1,27 @@
-<div id="rankings-box" class="content-box" ng-controller="rankingsCtrl">
-    <div class="header">Rankings</div>
-    <div class="table-box">
-        <table>
-            <tr class="column-headings">
-                <th>#</th>
-                <th>Ranking</th>
-                <th>Player</th>
-            </tr>
-            <tr class="column-values" ng-repeat="player in players">
-                <td>
-                    {{ player.index }}
-                </td>
-                <td>
-                    {{ player.ranking }}
-                </td>
-                <td>
-                    <a ui-sref="match-history.player({ username:player.username })">
-                        {{ player.display_name }}
+<div ng-controller="rankingsCtrl">
+    <div id="content">
+        <div id="rankings-box" class="content-box">
+            <div class="header">{{ heading }}</div>
+            <div class="table-box">
+                <div class="table">
+                    <div class="table-row column-headings">
+                        <div class="table-cell">#</div>
+                        <div class="table-cell">Rank</div>
+                        <div class="table-cell">Player</div>
+                    </div>
+                    <a class="table-row column-values" ng-repeat="player in players" href="#/player/{{ player.username }}">
+                        <div class="table-cell">
+                            {{ player.index }}
+                        </div>
+                        <div class="table-cell">
+                            {{ player.ranking }}
+                        </div>
+                        <div class="table-cell">
+                            {{ player.display_name }}
+                        </div>
                     </a>
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -1,0 +1,36 @@
+<div ng-controller="playerCtrl">
+    <div id="content">
+        <div id="player-box" class="content-box">
+            <div class="header">{{ heading }}</div>
+            <div class="details-box">
+                <div class="detail-block">
+                    <div class="detail-text">
+                        Ranking: {{ ranking }}
+                    </div>
+                </div>
+                <div class="detail-block">
+                    <div class="detail-text">
+                        Nickname: {{ nickname }}
+                    </div>
+                </div>
+                <div class="detail-block">
+                    <div class="detail-text">
+                        Games Played: {{ games_played }}
+                    </div>
+                </div>
+                <div class="detail-block">
+                    <div class="detail-text">
+                        Ranking Accuracy: {{ accuracy }}%
+                    </div>
+                </div>
+                <div class="detail-block">
+                    <div class="detail-text">
+                        Marks Farmed: {{ marks_farmed }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ui-view="match-history"></div>

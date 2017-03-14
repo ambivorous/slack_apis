@@ -2,34 +2,78 @@ body {
     margin: 0px;
     font-family: Verdana;
 }
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-tr {
-    font-size: 11pt;
-}
-th, td {
-    padding: 10px;
-}
-th {
-    text-align: left;
-    font-weight: normal;
-}
 
+
+/* HEADER */
 #header {
-    height: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
     background-color: #333;
     background: linear-gradient(to right, #333 , #222);
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    color: #fff;
 }
+#menu-bar {
+    max-width: 1024px;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.menu-item {
+    float: left;
+    position: relative;
+    line-height: 50px;
+}
+.menu-item a {
+    padding-left: 20px;
+    padding-right: 20px;
+    display: block;
+    transition: background-color cubic-bezier(.165, .84, .44, 1) .25s, border-bottom-color ease-in-out .25s;
+    transition: color cubic-bezier(.165, .84, .44, 1) .25s, border-bottom-color ease-in-out .25s;
+}
+.menu-item a:link {
+    color: #aaa;
+    text-decoration: none;
+}
+.menu-item a:visited {
+    color: #aaa;
+}
+.menu-item a:hover {
+    color: #333;
+    background-color: #7c5;
+}
+
+
+/* FOOTER */
+#footer {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.copyright {
+    color: #aaa;
+    line-height: 50px;
+    text-align: right;
+    max-width: 1024px;
+    position: relative;
+    margin: auto;
+    font-size: 10pt;
+}
+
+
+/* BODY */
 #content {
     padding: 20px;
+    padding-bottom: 0px;
 }
 #rankings-box {
     max-width: 1024px;
 }
 #match-history-box {
+    max-width: 1024px;
+}
+#player-box {
     max-width: 1024px;
 }
 
@@ -48,6 +92,23 @@ th {
     background-color: #333;
     background: linear-gradient(to right, #333 , #222);
 }
+
+.table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+.table-row {
+    display: table-row;
+    font-size: 11pt;
+    transition: color cubic-bezier(.165, .84, .44, 1) .25s, border-bottom-color ease-in-out .25s;
+}
+.table-cell {
+    display: table-cell;
+    padding: 10px;
+    transition: color cubic-bezier(.165, .84, .44, 1) .25s, border-bottom-color ease-in-out .25s;
+}
+
 .table-box {
     color: #333;
     background-color: #fff;
@@ -56,12 +117,38 @@ th {
     color: #333;
     text-decoration: none;
 }
+.table-box a:visited {
+    color: #333;
+}
 .table-box a:hover {
     color: #576;
 }
 .column-headings {
-    background-color: #f5f5f5;
+    background-color: #eee;
+}
+.column-values {
+    transition: background-color cubic-bezier(.165, .84, .44, 1) .25s, border-bottom-color ease-in-out .25s;
 }
 .column-values:hover {
     background-color: #dfc;
+}
+.details-box {
+    padding: 10px;
+    overflow: hidden;
+}
+.detail-block {
+    width: 50%;
+    float: left;
+}
+.detail-text {
+    padding: 10px;
+}
+
+
+/* MATCH SPECIFIC */
+.winner-points, .winner, .date {
+    text-align: right;
+}
+.score {
+    text-align: center;
 }

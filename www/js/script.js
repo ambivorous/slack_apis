@@ -39,13 +39,23 @@ app.config(['$stateProvider', '$urlRouterProvider',
                 displayName: "Match History"
             }
         })
-        .state('match-history.player', {
-            url: '/:username',
+        .state('player-history', {
+            url: '/match-history/:username',
             templateUrl: 'app/views/match-history/match-history.html',
+            data: {
+                displayName: "Match History"
+            }
         })
         .state('player', {
-            url: '/player',
-            templateUrl: 'app/views/player/player.html',
+            url: '/player/:username',
+            
+            views: {
+                '': { templateUrl: 'app/views/player/player.html' },
+                'match-history@player': {
+                    templateUrl: 'app/views/match-history/match-history.html',
+                    controller: 'matchHistoryCtrl'
+                },
+            },
             data: {
                 displayName: "Player"
             }
@@ -56,12 +66,18 @@ app.controller('rankingsCtrl', [
     '$scope', '$http',
     function($scope, $http) {
 
+    $scope.heading = "Rankings";
+
     function init() {
         $http.get('/slack-apis/table-tennis/rankings/')
         .success(function(data, status, headers, config) {
             var rankings = data.rankings;
             var players = [];
             var displayName;
+
+            if (status == 204) {
+                return;
+            }
 
             for (var i = 0; i < rankings.length; i++) {
                 if (rankings[i].nickname) {
@@ -95,8 +111,10 @@ app.controller('matchHistoryCtrl', [
 
     if ($stateParams.username) {
         endpoint = '/slack-apis/table-tennis/match-history/' + $stateParams.username;
+        $scope.heading = "Match History: " + $stateParams.username;
     } else {
         endpoint = '/slack-apis/table-tennis/match-history/';
+        $scope.heading = "Match History";
     }
 
     function init() {
@@ -109,6 +127,10 @@ app.controller('matchHistoryCtrl', [
             var winnerPoints;
             var loserPoints;
             var score;
+
+            if (status == 204) {
+                return;
+            }
 
             for (var i = 0; i < matchHistory.length; i++) {
                 if (matchHistory[i].winner_nickname) {
@@ -139,11 +161,41 @@ app.controller('matchHistoryCtrl', [
                     score: score,
                     loser: loserDisplay,
                     winner_points: winnerPoints,
-                    loser_points: loserPoints
+                    loser_points: loserPoints,
+                    winner_username: matchHistory[i].winner,
+                    loser_username: matchHistory[i].loser
                 });
             }
 
             $scope.matches = matches;
+        })
+        .error(function(data, status, headers, config) {
+            console.log("(" + status + ") " + data);
+        });
+    }
+
+    init();
+}]);
+
+app.controller('playerCtrl', [
+    '$scope', '$http', '$stateParams',
+    function($scope, $http, $stateParams) {
+
+    $scope.username = $stateParams.username;
+    $scope.heading = "Player: " + $scope.username;
+
+    function init() {
+        $http.get('/slack-apis/table-tennis/player/' + $scope.username)
+        .success(function(data, status, headers, config) {
+            if (status == 204) {
+                return;
+            }
+
+            $scope.nickname = (data.nickname) ? data.nickname : 'None';
+            $scope.ranking = data.ranking;
+            $scope.games_played = data.games_played;
+            $scope.accuracy = data.accuracy;
+            $scope.marks_farmed = data.marks_farmed;
         })
         .error(function(data, status, headers, config) {
             console.log("(" + status + ") " + data);

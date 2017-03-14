@@ -14,10 +14,24 @@
 
     <body ng-app="table-tennis" id="table-tennis">
         <div id="header">
-            
+            <div id="menu-bar">
+                <div class="menu-item">
+                    <a href="#/rankings">
+                        Rankings
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="#/match-history">
+                        Match History
+                    </a>
+                </div>
+            </div>
         </div>
-        <div id="content">
-            <div ui-view></div>
+        <div ui-view></div>
+        <div id="footer">
+            <div class="copyright">
+                I maked dis, 2017
+            </div>
         </div>
     </body>
 </html>

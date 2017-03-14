@@ -1,35 +1,39 @@
-<div id="match-history-box" class="content-box" ng-controller="matchHistoryCtrl">
-    <div class="header">Match History</div>
-    <div class="table-box">
-        <table>
-            <tr class="column-headings">
-                <th></th>
-                <th>Winner</th>
-                <th>Score</th>
-                <th>Loser</th>
-                <th></th>
-                <th>Date</th>
-            </tr>
-            <tr class="column-values" ng-repeat="match in matches">
-                <td>
-                    {{ match.winner_points }}
-                </td>
-                <td>
-                    {{ match.winner }}
-                </td>
-                <td>
-                    {{ match.score }}
-                </td>
-                <td>
-                    {{ match.loser }}
-                </td>
-                <td>
-                    {{ match.loser_points }}
-                </td>
-                <td>
-                    {{ match.date | date:"HH:mm 'on' dd/MM/yyyy" }}
-                </td>
-            </tr>
-        </table>
+<div ng-controller="matchHistoryCtrl">
+    <div id="content">
+        <div id="match-history-box" class="content-box">
+            <div class="header">{{ heading }}</div>
+            <div class="table-box">
+                <div class="table">
+                    <div class="table-row column-headings">
+                        <div class="table-cell winner-points"></div>
+                        <div class="table-cell winner">Winner</div>
+                        <div class="table-cell score">Score</div>
+                        <div class="table-cell loser">Loser</div>
+                        <div class="table-cell loser-points"></div>
+                        <div class="table-cell date">Date</div>
+                    </div>
+                    <div class="table-row column-values" ng-repeat="match in matches">
+                        <div class="table-cell winner-points">
+                            {{ match.winner_points }}
+                        </div>
+                        <a class="table-cell winner" href="#/player/{{ match.winner_username }}">
+                            {{ match.winner }}
+                        </a>
+                        <div class="table-cell score">
+                            {{ match.score }}
+                        </div>
+                        <a class="table-cell loser" href="#/player/{{ match.loser_username }}">
+                            {{ match.loser }}
+                        </a>
+                        <div class="table-cell loser-points">
+                            {{ match.loser_points }}
+                        </div>
+                        <div class="table-cell date">
+                            {{ match.date | date:"HH:mm 'on' dd/MM/yyyy" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

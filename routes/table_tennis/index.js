@@ -15,6 +15,7 @@ module.exports = function(router) {
     router.get('/table-tennis/rankings', fetchRankings);
     router.get('/table-tennis/match-history', fetchMatchHistory);
     router.get('/table-tennis/match-history/:username', fetchMatchHistory);
+    router.get('/table-tennis/player/:username', fetchPlayerDetails);
 };
 
 // add a new player to the database
@@ -440,6 +441,68 @@ function fetchMatchHistory(req, res) {
         res.status(200);
         res.json({
             matchHistory: matchHistory
+        });
+    });
+}
+
+function fetchPlayerDetails(req, res) {
+    var username = req.params.username;
+    var userID;
+    var nickname;
+    var ranking;
+    var count = 0,
+        marksFarmed = 0,
+        points = 0,
+        avePoints = 0.0,
+        accuracy = 0.0;
+
+    if (!username) {
+        res.status(400);
+        res.json({ error: 'Username entered is invalid.' });
+        return;
+    }
+
+    db.get("SELECT * FROM user WHERE username = ?", [ username ], function(err, row) {
+        if (!row) {
+            res.status(404);
+            res.json({ error: 'Player ' + username + ' doesn\'t exists.' });
+            return;
+        }
+        userID = row.user_id;
+        nickname = row.nickname;
+        ranking = row.ranking;
+
+        db.all("SELECT * FROM match WHERE match.winner = ?1 OR match.loser = ?1 ORDER BY date DESC", [ userID ], function(err, rows) {
+            if (rows.length == 0) {
+                res.status(204);
+                res.json({
+                    text: 'No matches for player ' + username + ' in the database.'
+                });
+                return;
+            }
+
+            db.get("SELECT user_id FROM user WHERE username = 'mark.oosthuizen'", function(err, row) {
+                markID = row.user_id;
+
+                for (var i = 0; i < rows.length; i++) {
+                    count += 1;
+                    points += rows[i].ranking_change;
+                    if (markID != userID && rows[i].loser == markID) {
+                        marksFarmed += 1;
+                    }
+                }
+                avePoints = points / count;
+                accuracy = Math.pow(Math.E, -(Math.pow(avePoints, 2)/Math.pow(2 * 5, 2))) * 100;
+
+                res.status(200);
+                res.json({
+                    nickname: nickname,
+                    ranking: ranking,
+                    games_played: count,
+                    accuracy: Math.round(accuracy),
+                    marks_farmed: marksFarmed
+                });
+            });
         });
     });
 }
