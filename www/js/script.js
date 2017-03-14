@@ -72,6 +72,7 @@ app.controller('rankingsCtrl', [
 
                 players.push({
                     index: i + 1,
+                    username: rankings[i].username,
                     display_name: displayName,
                     ranking: rankings[i].ranking
                 });

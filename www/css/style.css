@@ -52,6 +52,13 @@ th {
     color: #333;
     background-color: #fff;
  }
+.table-box a:link {
+    color: #333;
+    text-decoration: none;
+}
+.table-box a:hover {
+    color: #576;
+}
 .column-headings {
     background-color: #f5f5f5;
 }
