@@ -3,12 +3,17 @@
     <div class="table-box">
         <table>
             <tr class="column-headings">
+                <th></th>
                 <th>Winner</th>
                 <th>Score</th>
                 <th>Loser</th>
+                <th></th>
                 <th>Date</th>
             </tr>
             <tr class="column-values" ng-repeat="match in matches">
+                <td>
+                    {{ match.winner_points }}
+                </td>
                 <td>
                     {{ match.winner }}
                 </td>
@@ -17,6 +22,9 @@
                 </td>
                 <td>
                     {{ match.loser }}
+                </td>
+                <td>
+                    {{ match.loser_points }}
                 </td>
                 <td>
                     {{ match.date | date:"HH:mm 'on' dd/MM/yyyy" }}

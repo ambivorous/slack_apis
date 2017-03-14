@@ -106,6 +106,8 @@ app.controller('matchHistoryCtrl', [
             var matches = [];
             var winnerDisplay;
             var loserDisplay;
+            var winnerPoints;
+            var loserPoints;
             var score;
 
             for (var i = 0; i < matchHistory.length; i++) {
@@ -114,18 +116,30 @@ app.controller('matchHistoryCtrl', [
                 } else {
                     winnerDisplay = matchHistory[i].winner;
                 }
+
                 if (matchHistory[i].loser_nickname) {
                     loserDisplay = matchHistory[i].loser_nickname + ' (' + matchHistory[i].loser + ')';
                 } else {
                     loserDisplay = matchHistory[i].loser;
                 }
-                score = '(' + matchHistory[i].winner_wins + ' - ' + matchHistory[i].loser_wins + ')';
+
+                if (matchHistory[i].ranking_change >= 0) {
+                    winnerPoints = "(+" + matchHistory[i].ranking_change + ")";
+                    loserPoints = "(-" + Math.abs(matchHistory[i].ranking_change) + ")";
+                } else {
+                    winnerPoints = "(-" + Math.abs(matchHistory[i].ranking_change) + ")";
+                    loserPoints = "(+" + matchHistory[i].ranking_change + ")";
+                }
+
+                score = matchHistory[i].winner_wins + ' - ' + matchHistory[i].loser_wins;
 
                 matches.push({
                     date: matchHistory[i].date,
                     winner: winnerDisplay,
                     score: score,
-                    loser: loserDisplay
+                    loser: loserDisplay,
+                    winner_points: winnerPoints,
+                    loser_points: loserPoints
                 });
             }
 
