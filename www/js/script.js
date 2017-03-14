@@ -124,11 +124,11 @@ app.controller('matchHistoryCtrl', [
                 }
 
                 if (matchHistory[i].ranking_change >= 0) {
-                    winnerPoints = "(+" + matchHistory[i].ranking_change + ")";
+                    winnerPoints = "(+" + Math.abs(matchHistory[i].ranking_change) + ")";
                     loserPoints = "(-" + Math.abs(matchHistory[i].ranking_change) + ")";
                 } else {
                     winnerPoints = "(-" + Math.abs(matchHistory[i].ranking_change) + ")";
-                    loserPoints = "(+" + matchHistory[i].ranking_change + ")";
+                    loserPoints = "(+" + Math.abs(matchHistory[i].ranking_change) + ")";
                 }
 
                 score = matchHistory[i].winner_wins + ' - ' + matchHistory[i].loser_wins;
