@@ -492,7 +492,7 @@ function fetchPlayerDetails(req, res) {
                     }
                 }
                 avePoints = points / count;
-                accuracy = Math.pow(Math.E, -(Math.pow(avePoints, 2)/Math.pow(2 * 5, 2))) * 100;
+                accuracy = Math.pow(Math.E, -(Math.pow(avePoints, 2)/Math.pow(2 * 10, 2))) * 100;
 
                 res.status(200);
                 res.json({
