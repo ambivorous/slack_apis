@@ -11,7 +11,7 @@ body {
     background-color: #333;
     background: linear-gradient(to right, #333 , #222);
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    color: #fff;
+    color: #aaa;
 }
 #menu-bar {
     max-width: 1024px;
@@ -88,7 +88,7 @@ body {
     font-size: 12pt;
     padding: 15px;
     font-weight: bold;
-    color: #fff;
+    color: #eee;
     background-color: #333;
     background: linear-gradient(to right, #333 , #222);
 }
@@ -135,6 +135,7 @@ body {
 .details-box {
     padding: 10px;
     overflow: hidden;
+    color: #333;
 }
 .detail-block {
     width: 50%;
@@ -142,6 +143,9 @@ body {
 }
 .detail-text {
     padding: 10px;
+}
+.label {
+    color: #999;
 }
 
 
