@@ -473,13 +473,6 @@ function fetchPlayerDetails(req, res) {
         ranking = row.ranking;
 
         db.all("SELECT * FROM match WHERE match.winner = ?1 OR match.loser = ?1 ORDER BY date DESC", [ userID ], function(err, rows) {
-            if (rows.length == 0) {
-                res.status(204);
-                res.json({
-                    text: 'No matches for player ' + username + ' in the database.'
-                });
-                return;
-            }
 
             db.get("SELECT user_id FROM user WHERE username = 'mark.oosthuizen'", function(err, row) {
                 markID = row.user_id;
@@ -487,12 +480,12 @@ function fetchPlayerDetails(req, res) {
                 for (var i = 0; i < rows.length; i++) {
                     count += 1;
                     points += rows[i].ranking_change;
-                    if (markID != userID && rows[i].loser == markID) {
+                    if (markID != userID && rows[i].loser == markID && rows[i].ranking_change >= 0) {
                         marksFarmed += 1;
                     }
                 }
-                avePoints = points / count;
-                accuracy = Math.pow(Math.E, -(Math.pow(avePoints, 2)/Math.pow(2 * 5, 2))) * 100;
+                avePoints = rows.length == 0 ? 0 : points / count;
+                accuracy = Math.pow(Math.E, -(Math.pow(avePoints, 2)/Math.pow(2 * 10, 2))) * 100;
 
                 res.status(200);
                 res.json({
