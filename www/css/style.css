@@ -1,6 +1,6 @@
 body {
     margin: 0px;
-    font-family: Verdana;
+    font-family: Verdana, Helvetica;
 }
 
 
@@ -144,7 +144,7 @@ body {
 .detail-text {
     padding: 10px;
 }
-.label {
+.dull {
     color: #999;
 }
 
