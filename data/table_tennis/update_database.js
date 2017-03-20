@@ -1,4 +1,4 @@
-const LATEST = 1.1;
+const LATEST = 1.2;
 
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('./data/table_tennis.db');
@@ -30,6 +30,13 @@ module.exports = function() {
             query += "UPDATE version SET version = " + 1.1 + " WHERE key = 'database'; ";
             query += "COMMIT; ";
         }
+
+        if (version < 1.2) {
+            query += "BEGIN TRANSACTION; ";
+            query += "CREATE TABLE IF NOT EXISTS reservations (pkid INTEGER PRIMARY KEY UNIQUE, start_timestamp INTEGER, end_timestamp INTEGER, username TEXT); ";
+            query += "COMMIT; ";
+        }
+
         if (version < LATEST) {
             // next release
         }

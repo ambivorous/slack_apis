@@ -1,6 +1,7 @@
 const RATINGS_CONSTANT = 32;
 
 var sqlite3 = require('sqlite3').verbose();
+var moment = require('moment');
 var db = new sqlite3.Database('./data/table_tennis.db');
 
 module.exports = function(router) {
@@ -9,7 +10,8 @@ module.exports = function(router) {
     router.post('/table-tennis/set-nickname', setNickname);
     router.post('/table-tennis/challenge', challengePlayer);
     router.post('/table-tennis/accept', reserveMatch); // potentially unneeded
-    router.post('/table-tennis/reserve-table', reserveTable);
+    router.post('/table-tennis/make-reservation', makeReservation);
+    router.post('/table-tennis/cancel-reservation', cancelReservation);
     router.post('/table-tennis/add-match', addMatch);
     //router.post('/table-tennis/remove-match', removeMatch);
     router.get('/table-tennis/rankings', fetchRankings);
@@ -170,8 +172,106 @@ function reserveMatch(req, res) {
     // challenge accepted
 }
 
-function reserveTable(req, res) {
-    // international shotgun rules
+function cancelReservation(req, res) { 
+    var username = req.body.username;
+    var mode = req.query.mode;
+
+    if (!username) {
+        res.status(400);
+        res.json({ error: 'Username required' });
+        return;
+    }
+
+    if (mode != "test") {
+        db.run("DELETE FROM reservations WHERE username = ?", [ username ], function(err) {
+            if (err) {
+                res.status(500);
+                res.json({ error: 'DELETE failed: ' + err });
+                return;
+            }
+
+            res.status(200);
+            res.json({
+                text: 'Reservations for ' + username + ' deleted.'
+            });
+            return;
+        });
+    } else {
+        res.status(200);
+        res.json({
+            mode: 'test',
+            text: 'Reservations for ' + username + ' deleted.'
+        });
+        return;
+    }
+}
+
+function makeReservation(req, res) {
+    var username = req.body.username,
+        start = req.body.start_time;  
+    var mode = req.query.mode;
+
+    if (!username) {
+        res.status(400);
+        res.json({ error: 'Username required' });
+        return;
+    }
+
+    // Parse start time
+    // Default to now
+    if (!start) {
+        start = moment();
+    }
+    // Otherwise accept a date or a time
+    else if (moment(start, ['DD-MM-YYYY HH:mm', 'HH:mm'], true).isValid()) {
+        start = moment(start, ['DD-MM-YYYY HH:mm', 'HH:mm']);
+    }
+    else {
+        res.status(400);
+        res.json({ error: 'Invalid start date ' + start });
+        return;
+    }
+
+    end = start.clone().add(20, 'm');
+    
+    db.all("SELECT * FROM reservations ORDER BY start_timestamp", function(err, rows) {        
+        if (rows.length != 0) {
+            // Check if the requested reservation overlaps with any existing reservation
+            for (var i = 0; i < rows.length; i++) {
+                var res_start = moment(rows[i].start_timestamp);
+                var res_end = moment(rows[i].end_timestamp);
+
+                if (end.isBetween(res_start, res_end) || start.isBetween(res_start, res_end)) {
+                    res.status(400);
+                    res.json({ error: 'Sorry, your slot overlaps with one reserved for ' + rows[i].username });
+                    return;
+                }
+            }
+        }
+
+        if (mode != "test") {
+            db.run("INSERT INTO reservations (username, start_timestamp, end_timestamp) VALUES (?, ?, ?)", [ username, start.valueOf(), end.valueOf() ], function(err) {
+                if (err) {
+                    res.status(500);
+                    res.json({ error: 'INSERT failed: ' + err });
+                    return;
+                }
+
+                res.status(201);
+                res.json({
+                    text: 'Table reserved for ' + username + ' from ' + start.format() + ' until ' + end.format() + '.'
+                });
+                return;
+            });
+        } else {
+            res.status(200);
+            res.json({
+                mode: 'test',
+                text: 'Table reserved for ' + username + ' from ' + start.format() + ' until ' + end.format() + '.'
+            });
+            return;
+        };        
+    });
 }
 
 // add match to the database and update rankings
