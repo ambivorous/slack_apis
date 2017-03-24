@@ -373,7 +373,7 @@ function addMatch(req, res) {
                     + winner + "', '" + winnerWins + "', '" + loser + "', '" + loserWins + "', '" + dateInSeconds + "', '" + rankingGained + "'); "
                     + "UPDATE user SET ranking = " + p1Ranking + " WHERE user_id = " + p1ID + "; "
                     + "UPDATE user SET ranking = " + p2Ranking + " WHERE user_id = " + p2ID + "; "
-                    + "COMMIT"
+                    + "COMMIT; "
 
                 if (mode != "test") {
                     db.exec(query, function(err) {
@@ -421,6 +421,7 @@ function addMatch(req, res) {
 // remove a match from the database and update rankings
 function removeMatch(req, res) {
     var matchID = Number(req.body.matchID);
+    var mode = req.query.mode;
 
     if (matchID < 0) {
         res.status(400);
@@ -432,8 +433,6 @@ function removeMatch(req, res) {
     var rankingChanges = [];
     var query;
 
-    var winnerRanking, loserRanking;
-
     db.get("SELECT * FROM match WHERE match_id = ?", [ matchID ], function(err, match) {
         if (!match) {
             res.status(404);
@@ -441,25 +440,32 @@ function removeMatch(req, res) {
             return;
         }
 
-        db.run("UPDATE user SET ranking = (ranking - ?) WHERE user_id = ?", [ match.ranking_change, match.winner ], function(err) {
-            if (err) {
-                res.status(500);
-                res.json({ error: 'Updating database failed: ' + err });
-                return;
-            }
+        var query = "BEGIN TRANSACTION; "
+            + "UPDATE user SET ranking = (ranking - " + match.ranking_change + ") WHERE user_id = " + match.winner + "; "
+            + "UPDATE user SET ranking = (ranking + " + match.ranking_change + ") WHERE user_id = " + match.loser + "; "
+            + "DELETE FROM match WHERE match_id = " + matchID + "; "
+            + "COMMIT; "
 
-            db.run("UPDATE user SET ranking = (ranking + ?) WHERE user_id = ?", [ match.ranking_change, match.loser ], function(err) {
+        if (mode != "test") {
+            db.exec(query, function(err) {
                 if (err) {
                     res.status(500);
                     res.json({ error: 'Updating database failed: ' + err });
                     return;
                 }
 
-                db.run("DELETE FROM match WHERE match_id = ?", [ matchID ], function(err) {
-                    var rawr = true;
+                res.status(200);
+                res.json({
+                    text: 'Match with ID ' + matchID + ' removed.'
                 });
+                return;
             });
-        });
+        } else {
+            res.status(200);
+            res.json({
+                text: 'Match with ID ' + matchID + ' removed.'
+            });
+        }
     });
 
     /*db.each("SELECT * FROM match WHERE match_id >= ? ORDER BY match_id DESC", [ match_id ], function(err, row) {
