@@ -621,7 +621,7 @@ function fetchPlayerDetails(req, res) {
                     }
                 }
                 avePoints = rows.length == 0 ? 0 : points / count;
-                accuracy = Math.pow(Math.E, -(Math.pow((avePoints - 16), 2)/Math.pow(2 * 8, 2))) * 100;
+                accuracy = Math.pow(Math.E, -(Math.pow((avePoints - 16), 2)/Math.pow(2 * 4, 2))) * 100;
 
                 res.status(200);
                 res.json({
