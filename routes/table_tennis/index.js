@@ -8,12 +8,12 @@ module.exports = function(router) {
     router.post('/table-tennis/add-player', addPlayer);
     router.post('/table-tennis/remove-player', removePlayer);
     router.post('/table-tennis/set-nickname', setNickname);
-    router.post('/table-tennis/challenge', challengePlayer);
-    router.post('/table-tennis/accept', reserveMatch); // potentially unneeded
+    //router.post('/table-tennis/challenge', challengePlayer);
+    //router.post('/table-tennis/accept', reserveMatch); // potentially unneeded
     router.post('/table-tennis/make-reservation', makeReservation);
     router.post('/table-tennis/cancel-reservation', cancelReservation);
     router.post('/table-tennis/add-match', addMatch);
-    //router.post('/table-tennis/remove-match', removeMatch);
+    router.post('/table-tennis/remove-match', removeMatch);
     router.get('/table-tennis/rankings', fetchRankings);
     router.get('/table-tennis/match-history', fetchMatchHistory);
     router.get('/table-tennis/match-history/:username', fetchMatchHistory);
@@ -326,10 +326,10 @@ function addMatch(req, res) {
                 [ p1ID, p2ID, startDateInSeconds ], function(err, row) {
 
                 // work out new ranking
-                if (row.count >= 20) {
+                if (row.count >= 10) {
                     weighting = 0.25;
                 } else {
-                    weighting = 1 - ((row.count * 3)/80); // y = -x*3/80 + 1
+                    weighting = 1 - ((row.count * 3)/40); // y = -x*3/40 + 1
                 }
 
                 p1Expected = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
@@ -371,8 +371,8 @@ function addMatch(req, res) {
                 var query = "BEGIN TRANSACTION; "
                     + "INSERT INTO match (winner, winner_wins, loser, loser_wins, date, ranking_change) VALUES ('"
                     + winner + "', '" + winnerWins + "', '" + loser + "', '" + loserWins + "', '" + dateInSeconds + "', '" + rankingGained + "'); "
-                    + "UPDATE user SET ranking = " + p1Ranking + " WHERE user_id = '" + p1ID + "'; "
-                    + "UPDATE user SET ranking = " + p2Ranking + " WHERE user_id = '" + p2ID + "'; "
+                    + "UPDATE user SET ranking = " + p1Ranking + " WHERE user_id = " + p1ID + "; "
+                    + "UPDATE user SET ranking = " + p2Ranking + " WHERE user_id = " + p2ID + "; "
                     + "COMMIT"
 
                 if (mode != "test") {
@@ -419,10 +419,10 @@ function addMatch(req, res) {
 }
 
 // remove a match from the database and update rankings
-/*function removeMatch(req, res) {
+function removeMatch(req, res) {
     var matchID = Number(req.body.matchID);
 
-    if (!matchID) {
+    if (matchID < 0) {
         res.status(400);
         res.json({ error: 'Input invalid.' });
         return;
@@ -432,7 +432,37 @@ function addMatch(req, res) {
     var rankingChanges = [];
     var query;
 
-    db.each("SELECT * FROM match WHERE match_id >= ? ORDER BY match_id DESC", [ match_id ], function(err, row) {
+    var winnerRanking, loserRanking;
+
+    db.get("SELECT * FROM match WHERE match_id = ?", [ matchID ], function(err, match) {
+        if (!match) {
+            res.status(404);
+            res.json({ error: 'Can\'t find match with ID ' + matchID + '.' });
+            return;
+        }
+
+        db.run("UPDATE user SET ranking = (ranking - ?) WHERE user_id = ?", [ match.ranking_change, match.winner ], function(err) {
+            if (err) {
+                res.status(500);
+                res.json({ error: 'Updating database failed: ' + err });
+                return;
+            }
+
+            db.run("UPDATE user SET ranking = (ranking + ?) WHERE user_id = ?", [ match.ranking_change, match.loser ], function(err) {
+                if (err) {
+                    res.status(500);
+                    res.json({ error: 'Updating database failed: ' + err });
+                    return;
+                }
+
+                db.run("DELETE FROM match WHERE match_id = ?", [ matchID ], function(err) {
+                    var rawr = true;
+                });
+            });
+        });
+    });
+
+    /*db.each("SELECT * FROM match WHERE match_id >= ? ORDER BY match_id DESC", [ match_id ], function(err, row) {
         if (match_id === matchID) {
             db.run("DELETE FROM match WHERE match_id = ?", [ match_id ], function(err) {
                 // reverse rankings
@@ -472,8 +502,8 @@ function addMatch(req, res) {
             var value = rankingChanges[index];
             rankingChanges[index] = value - row.ranking_change;
         }
-    });
-}*/
+    });*/
+}
 
 function fetchRankings(req, res) {
     var rankings = [];
