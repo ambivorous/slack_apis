@@ -327,9 +327,9 @@ function addMatch(req, res) {
 
                 // work out new ranking
                 if (row.count >= 10) {
-                    weighting = 0.25;
+                    weighting = 0.5;
                 } else {
-                    weighting = 1 - ((row.count * 3)/40); // y = -x*3/40 + 1
+                    weighting = 1 - ((row.count * 2)/40); // y = -x*2/40 + 1
                 }
 
                 p1Expected = 1 / (1 + Math.pow(10, ((p1Ranking - p2Ranking) / 400)));
