@@ -550,7 +550,7 @@ function fetchMatchHistory(req, res) {
         query += "WHERE winner.username = \"" + username + "\" OR loser.username = \"" + [ username ] + "\" ";
     }
 
-    query += "ORDER BY date DESC";
+    query += "ORDER BY date DESC LIMIT 50";
 
     db.all(query, function(err, rows) {
         if (rows.length == 0) {
